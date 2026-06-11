@@ -7,3 +7,4 @@ google-auth-oauthlib>=1.2.0
 google-auth>=2.30.0
 # Only needed if TTS_PROVIDER=piper (free voice):
 # piper-tts>=1.2.0
+gTTS>=2.3.0

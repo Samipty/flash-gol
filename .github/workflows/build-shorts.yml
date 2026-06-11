@@ -1,7 +1,5 @@
 name: build-shorts
 
-# Runs HOURLY so post-match recaps go out while results are fresh.
-# Use a PUBLIC repo for unlimited free Actions minutes (keys stay safe as Secrets).
 on:
   schedule:
     - cron: "0 * * * *"
@@ -32,16 +30,11 @@ jobs:
         env:
           LLM_PROVIDER: gemini
           DATA_PROVIDER: api_sports
-          TTS_PROVIDER: elevenlabs
+          TTS_PROVIDER: piper
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           APISPORTS_KEY: ${{ secrets.APISPORTS_KEY }}
-          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
-          TTS_VOICE_ID: ${{ secrets.TTS_VOICE_ID }}
       - name: Persist dedupe log
         if: always()
         run: |
           git config user.name "shorts-bot"
           git config user.email "bot@users.noreply.github.com"
-          git add state/posted.json || true
-          git commit -m "update posted log [skip ci]" || echo "nothing to commit"
-          git push || echo "nothing to push"
