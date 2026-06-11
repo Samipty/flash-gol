@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(python -m pip install yt-dlp 2>&1 | Select-Object -Last 5)",
+      "PowerShell(python -m pip install openai-whisper 2>&1 | Select-Object -Last 8)",
+      "PowerShell(python -m yt_dlp --version)",
+      "PowerShell(python -m whisper --help 2>&1 | Select-Object -First 2)",
+      "PowerShell(python -c \"import whisper; print\\('whisper OK, version:', whisper.__version__ if hasattr\\(whisper,'__version__'\\) else 'installed'\\)\")",
+      "PowerShell(Set-Location *)",
+      "PowerShell(New-Item *)",
+      "PowerShell(Invoke-WebRequest -Uri \"http://localhost:9222/json\" -UseBasicParsing 2>&1 | Select-Object -First 3)",
+      "PowerShell(Invoke-WebRequest -Uri \"http://localhost:9222/json\" -UseBasicParsing 2>&1 | Select-Object -First 5)",
+      "PowerShell(Get-Process *)",
+      "PowerShell(Start-Sleep -Seconds 3; Invoke-WebRequest -Uri \"http://localhost:9222/json\" -UseBasicParsing -TimeoutSec 5 2>&1 | Select-Object -First 3)",
+      "PowerShell(Invoke-WebRequest -Uri \"http://localhost:9222/json\" -UseBasicParsing | ConvertFrom-Json | Where-Object { $_.type -eq \"page\" } | Select-Object title, url)",
+      "PowerShell(Invoke-WebRequest -Uri \"http://localhost:9222/json\" -UseBasicParsing | ConvertFrom-Json | Select-Object title, url, type)",
+      "PowerShell(\\(Invoke-WebRequest -Uri \"http://localhost:9222/json\" -UseBasicParsing\\).Content)",
+      "PowerShell(Get-ChildItem *)",
+      "PowerShell(Start-Process \"$env:USERPROFILE\\\\ig-research\\\\projects\\\\mundial-2026\\\\report.html\")"
+    ]
+  }
+}
