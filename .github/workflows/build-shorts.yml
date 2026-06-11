@@ -29,10 +29,10 @@ jobs:
         run: python main.py
         env:
           LLM_PROVIDER: gemini
-          DATA_PROVIDER: api_sports
+          DATA_PROVIDER: football_data
           TTS_PROVIDER: piper
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          APISPORTS_KEY: ${{ secrets.APISPORTS_KEY }}
+          APISPORTS_KEY: ${{ secrets.FOOTBALLDATA_TOKEN }}
       - name: Persist dedupe log
         if: always()
         run: |
