@@ -79,6 +79,8 @@ MAX_SHORTS_PER_DAY = 8
 TEAM_WATCHLIST = [
     "Argentina", "Spain", "Brazil", "Mexico", "France",
     "England", "Portugal", "Colombia", "Panama",
+    "USA", "Uruguay", "Paraguay", "Ecuador",
+    "Germany", "Netherlands", "Croatia",
 ]
 
 SCRIPT_TARGET_SECONDS = 45
@@ -86,6 +88,6 @@ VIDEO_W, VIDEO_H = 1080, 1920
 SCRIPT_LANGUAGE = "es"
 
 YT_CATEGORY_ID = "17"
-YT_PRIVACY = "public"
+YT_PRIVACY = "private"
 
 CHANNEL_NAME = "Flash Gol"

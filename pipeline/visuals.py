@@ -99,15 +99,15 @@ def _centered(d, text, y, font, color, shadow=True, max_w=W-80):
     return int(y + font.getbbox(text)[3] + 14)
 
 def _top_pill(d, text, color=GOLD):
-    """Top banner pill."""
-    d.rounded_rectangle([50, 80, W-50, 175], radius=28, fill=color)
+    """Top banner pill — pushed down to clear YouTube's top UI overlay."""
+    d.rounded_rectangle([50, 180, W-50, 285], radius=28, fill=color)
     f = _font(46)
     while d.textlength(text, font=f) > W-130 and f.size > 24:
         f = _font(f.size - 3)
-    d.text(((W - d.textlength(text, font=f)) / 2, 108), text, font=f,
+    d.text(((W - d.textlength(text, font=f)) / 2, 208), text, font=f,
            fill=DARK_BASE)
 
-def _gold_line(d, y=193):
+def _gold_line(d, y=303):
     d.rectangle([60, y, W-60, y+4], fill=GOLD)
 
 def _cta_btn(d, text, color=RED_CTA):
@@ -118,7 +118,7 @@ def _cta_btn(d, text, color=RED_CTA):
     d.text(((W - d.textlength(text, font=f)) / 2, H-178), text, font=f,
            fill=WHITE)
 
-def _vcentered_block(lines_data, top=175, bottom=None):
+def _vcentered_block(lines_data, top=320, bottom=None):
     """Calculate starting Y to vertically center a block of lines."""
     if bottom is None:
         bottom = H - 240
@@ -165,7 +165,7 @@ def _hook_card(path, home, away, title, hook, league=""):
             break
 
     lh = hf.getbbox("A")[3] + 22
-    y = 230
+    y = 340
     for line in lines:
         tw = d.textlength(line, font=hf)
         d.text((int((W-tw)/2)+2, y+2), line, font=hf, fill=(0,0,0))
@@ -290,12 +290,23 @@ def _scoreboard_card(path, home, away, hs, away_s):
     _top_pill(d, "⚽  RESULTADO FINAL", GOLD)
     _gold_line(d)
 
+    # Use "?" if score is None
+    hs_str = str(hs) if hs is not None else "?"
+    as_str = str(away_s) if away_s is not None else "?"
+    score_text = f"{hs_str}  —  {as_str}"
+
+    # Auto-size: start at 220, shrink if too wide
+    for size in [220, 180, 140, 110]:
+        sf = _font(size)
+        if d.textlength(score_text, font=sf) <= W - 80:
+            break
+
     ld = [
-        (home.upper(), _font(78), WHITE, _font(78).getbbox("A")[3]+16),
-        (f"{hs}  —  {away_s}", _font(260), GOLD, _font(260).getbbox("A")[3]+20),
-        (away.upper(), _font(78), MUTED, _font(78).getbbox("A")[3]+14),
+        (home.upper(), _font(72), WHITE, _font(72).getbbox("A")[3]+16),
+        (score_text, sf, GOLD, sf.getbbox("A")[3]+20),
+        (away.upper(), _font(72), MUTED, _font(72).getbbox("A")[3]+14),
     ]
-    y = _vcentered_block(ld, top=175, bottom=H-240)
+    y = _vcentered_block(ld, top=193, bottom=H-240)
     _render_lines(d, ld, y)
     _cta_btn(d, "¿SORPRENDIDO? 👇 @FlashGol")
     img.save(path, "PNG")
