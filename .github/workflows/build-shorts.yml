@@ -40,3 +40,7 @@ jobs:
         run: |
           git config user.name "shorts-bot"
           git config user.email "bot@users.noreply.github.com"
+          mkdir -p state
+          git add -f state/posted.json || true
+          git commit -m "update posted log [skip ci]" || echo "nothing to commit"
+          git push || echo "nothing to push"
