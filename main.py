@@ -13,7 +13,6 @@ import sys
 from datetime import datetime, timezone
 
 import config
-print("DEBUG DATA_PROVIDER =", repr(config.DATA_PROVIDER))
 from pipeline import matches, research, voice, visuals, video, upload
 
 

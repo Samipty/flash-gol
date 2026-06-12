@@ -100,7 +100,5 @@ def synthesize(text, out_base):
     text = _clean_for_tts(text)
     if config.TTS_PROVIDER == "elevenlabs":
         return _elevenlabs(text, out_base)
-    if config.TTS_PROVIDER == "piper":
-        return _piper(text, out_base)
     # Default: gTTS (works on Windows, Linux, GitHub Actions — no model files needed)
     return _gtts(text, out_base)
