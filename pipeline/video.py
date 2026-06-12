@@ -2,7 +2,9 @@
 
 Simple, reliable: each card shown statically for its time slice.
 No zoompan (caused bouncing on Windows). Clean fade between cards.
+Mixes in looping background music at low volume under the voiceover.
 """
+import os
 import subprocess
 import config
 
@@ -39,14 +41,29 @@ def build_video(card_paths, voice_path, out_path):
         + f";{concat_in}concat=n={len(card_paths)}:v=1:a=0[vout]"
     )
 
-    audio_idx = len(card_paths)
-    cmd = [
-        "ffmpeg", "-y",
-        *inputs,
-        "-i", voice_path,
+    voice_idx = len(card_paths)
+    cmd = ["ffmpeg", "-y", *inputs, "-i", voice_path]
+
+    music_path = getattr(config, "MUSIC_PATH", None)
+    music_volume = getattr(config, "MUSIC_VOLUME", 0.12)
+
+    if music_path and os.path.exists(music_path):
+        # Loop the music indefinitely; -shortest later trims to voice length.
+        cmd += ["-stream_loop", "-1", "-i", music_path]
+        music_idx = voice_idx + 1
+        filtergraph += (
+            f";[{voice_idx}:a]volume=1.0[voice]"
+            f";[{music_idx}:a]volume={music_volume}[music]"
+            f";[voice][music]amix=inputs=2:duration=first:dropout_transition=0:normalize=0[aout]"
+        )
+        audio_map = "[aout]"
+    else:
+        audio_map = f"{voice_idx}:a"
+
+    cmd += [
         "-filter_complex", filtergraph,
         "-map", "[vout]",
-        "-map", f"{audio_idx}:a",
+        "-map", audio_map,
         "-c:v", "libx264", "-preset", "fast", "-crf", "23",
         "-pix_fmt", "yuv420p",
         "-c:a", "aac", "-b:a", "128k",
