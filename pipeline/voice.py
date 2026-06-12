@@ -59,6 +59,8 @@ def _gtts(text, out_base):
 def _elevenlabs(text, out_base):
     if not config.TTS_VOICE_ID:
         raise RuntimeError("Set TTS_VOICE_ID in .env")
+    speed = getattr(config, "VOICE_SPEED", 1.0)
+    raw_path = out_base + "_raw.mp3"
     out_path = out_base + ".mp3"
     url = f"https://api.elevenlabs.io/v1/text-to-speech/{config.TTS_VOICE_ID}"
     headers = {"xi-api-key": config.ELEVENLABS_API_KEY, "Content-Type": "application/json"}
@@ -69,8 +71,16 @@ def _elevenlabs(text, out_base):
     }
     r = requests.post(url, headers=headers, json=payload, timeout=120)
     r.raise_for_status()
-    with open(out_path, "wb") as f:
-        f.write(r.content)
+    if abs(speed - 1.0) > 0.05:
+        with open(raw_path, "wb") as f:
+            f.write(r.content)
+        _apply_speed(raw_path, out_path, speed)
+        import os
+        try: os.remove(raw_path)
+        except OSError: pass
+    else:
+        with open(out_path, "wb") as f:
+            f.write(r.content)
     return out_path
 
 
@@ -99,6 +109,10 @@ def _piper(text, out_base):
 def synthesize(text, out_base):
     text = _clean_for_tts(text)
     if config.TTS_PROVIDER == "elevenlabs":
-        return _elevenlabs(text, out_base)
+        try:
+            return _elevenlabs(text, out_base)
+        except Exception as e:
+            print(f"  ! ElevenLabs failed ({e}) — falling back to gTTS")
+            return _gtts(text, out_base)
     # Default: gTTS (works on Windows, Linux, GitHub Actions — no model files needed)
     return _gtts(text, out_base)

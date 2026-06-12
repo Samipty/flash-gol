@@ -30,9 +30,11 @@ jobs:
         env:
           LLM_PROVIDER: claude
           DATA_PROVIDER: api_sports
-          TTS_PROVIDER: piper
+          TTS_PROVIDER: elevenlabs
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           APISPORTS_KEY: ${{ secrets.APISPORTS_KEY }}
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+          TTS_VOICE_ID: ${{ secrets.TTS_VOICE_ID }}
       - name: Persist dedupe log
         if: always()
         run: |
