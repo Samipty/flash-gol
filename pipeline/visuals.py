@@ -87,8 +87,26 @@ def _make_bg(tint_color):
             px[x, y] = (min(r,255), min(g,255), min(b,255))
     return img
 
+# Safe width for body/description text — keeps clear of YouTube's
+# right-side action icons (like/comment/share) overlaying the video.
+SAFE_TEXT_W = 800
+
+def _wrap_text(d, text, font, max_w):
+    words, lines, cur = text.split(), [], ""
+    for w in words:
+        trial = f"{cur} {w}".strip()
+        if d.textlength(trial, font=font) <= max_w:
+            cur = trial
+        else:
+            if cur:
+                lines.append(cur)
+            cur = w
+    if cur:
+        lines.append(cur)
+    return lines or [""]
+
 # ── Drawing helpers ────────────────────────────────────────────────────────────
-def _centered(d, text, y, font, color, shadow=True, max_w=W-80):
+def _centered(d, text, y, font, color, shadow=True, max_w=SAFE_TEXT_W):
     while font.size > 20 and d.textlength(text, font=font) > max_w:
         font = _font(font.size - 5, bold=True)
     tw = d.textlength(text, font=font)
@@ -188,7 +206,7 @@ def _hook_card(path, home, away, title, hook, league=""):
     return path
 
 
-def _stat_card(path, home, away, banner, stat, label, body_lines):
+def _stat_card(path, home, away, banner, stat, label, body_text):
     """Standard segment card: big stat + label + body text."""
     img = _make_bg(_team_tint(home))
     d = ImageDraw.Draw(img)
@@ -200,14 +218,24 @@ def _stat_card(path, home, away, banner, stat, label, body_lines):
     if stat:
         st = stat.upper()
         sf = _font(120 if len(st) <= 8 else 80 if len(st) <= 16 else 60)
+        # Shrink stat font if it doesn't fit the safe width
+        while sf.size > 36 and d.textlength(st, font=sf) > SAFE_TEXT_W:
+            sf = _font(sf.size - 6)
         lh = sf.getbbox("A")[3] + 20
         ld.append((st, sf, GOLD, lh))
     if label:
         lbf = _font(64)
+        while lbf.size > 28 and d.textlength(label.upper(), font=lbf) > SAFE_TEXT_W:
+            lbf = _font(lbf.size - 4)
         ld.append((label.upper(), lbf, WHITE, lbf.getbbox("A")[3] + 16))
-    for line in body_lines:
-        if line:
-            bf = _font(46, bold=False)
+    if body_text:
+        # Wrap the full sentence to fit SAFE_TEXT_W; shrink font if too many lines
+        for size in (46, 40, 36, 32, 28):
+            bf = _font(size, bold=False)
+            body_lines = _wrap_text(d, body_text, bf, SAFE_TEXT_W)
+            if len(body_lines) <= 3:
+                break
+        for line in body_lines:
             ld.append((line, bf, MUTED, bf.getbbox("A")[3] + 12))
 
     y = _vcentered_block(ld)
@@ -229,20 +257,12 @@ def _underdog_card(path, home, away, name, team, fact):
         (team.upper(), _font(52, bold=False), MUTED, _font(52).getbbox("A")[3] + 14),
     ]
     if fact:
-        ff = _font(44, bold=False)
-        words = fact.split()
-        lines, cur = [], ""
-        for w in words:
-            trial = f"{cur} {w}".strip()
-            if d.textlength(trial, font=ff) <= W - 100:
-                cur = trial
-            else:
-                if cur:
-                    lines.append(cur)
-                cur = w
-        if cur:
-            lines.append(cur)
-        for line in lines:
+        for size in (44, 40, 36, 32):
+            ff = _font(size, bold=False)
+            fact_lines = _wrap_text(d, fact, ff, SAFE_TEXT_W)
+            if len(fact_lines) <= 3:
+                break
+        for line in fact_lines:
             ld.append((line, ff, MUTED, ff.getbbox("A")[3] + 10))
 
     y = _vcentered_block(ld)
@@ -350,12 +370,9 @@ def build_cards(script, mode="preview", result=None):
         text  = seg.get("text", "")
         stat  = seg.get("card_stat", "")
         label = seg.get("card_title", "")
-        words = text.split()
-        mid_i = len(words) // 2
-        body  = [" ".join(words[:mid_i]), " ".join(words[mid_i:])]
         p = str(config.OUTPUT_DIR / f"{mid}_card_{i+1:02d}.png")
         banner = f"⚽  {label.upper()}" if label else "⚡  FLASH GOL"
-        _stat_card(p, home, away, banner, stat, label, body)
+        _stat_card(p, home, away, banner, stat, label, text)
         paths.append(p)
 
     # ── Underdog card ──
