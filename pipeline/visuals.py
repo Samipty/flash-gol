@@ -118,11 +118,11 @@ def _centered(d, text, y, font, color, shadow=True, max_w=SAFE_TEXT_W):
 
 def _top_pill(d, text, color=GOLD):
     """Top banner pill — pushed down to clear YouTube's top UI overlay."""
-    d.rounded_rectangle([50, 180, W-50, 285], radius=28, fill=color)
+    d.rounded_rectangle([50, 210, W-50, 315], radius=28, fill=color)
     f = _font(46)
     while d.textlength(text, font=f) > W-130 and f.size > 24:
         f = _font(f.size - 3)
-    d.text(((W - d.textlength(text, font=f)) / 2, 208), text, font=f,
+    d.text(((W - d.textlength(text, font=f)) / 2, 238), text, font=f,
            fill=DARK_BASE)
 
 def _gold_line(d, y=303):

@@ -1,12 +1,15 @@
 """Step 5 — Video assembly with ffmpeg.
 
-Simple, reliable: each card shown statically for its time slice.
-No zoompan (caused bouncing on Windows). Clean fade between cards.
+Simple, reliable: each card shown for its time slice with a quick
+fade-in/fade-out "blink cut" between cards (proven social-media transition,
+subtle, no zoompan/bouncing issues).
 Mixes in looping background music at low volume under the voiceover.
 """
 import os
 import subprocess
 import config
+
+FADE_DUR = 0.12  # seconds — quick blink cut between cards
 
 
 def _audio_duration(audio_path):
@@ -23,8 +26,10 @@ def build_video(card_paths, voice_path, out_path):
     per = max(duration / len(card_paths), 1.5)
     fps = 30
     w, h = config.VIDEO_W, config.VIDEO_H
+    fade_out_start = max(per - FADE_DUR, 0)
 
-    # Each card: scale to exact size, pad if needed, set SAR
+    # Each card: scale to exact size, pad if needed, set SAR,
+    # then a quick fade-in and fade-out (blink cut) on its own timeline.
     inputs = []
     filter_parts = []
     for i, card in enumerate(card_paths):
@@ -32,7 +37,9 @@ def build_video(card_paths, voice_path, out_path):
         filter_parts.append(
             f"[{i}:v]scale={w}:{h}:force_original_aspect_ratio=decrease,"
             f"pad={w}:{h}:(ow-iw)/2:(oh-ih)/2:color=black,"
-            f"setsar=1,fps={fps}[v{i}]"
+            f"setsar=1,fps={fps},"
+            f"fade=t=in:st=0:d={FADE_DUR}:color=black,"
+            f"fade=t=out:st={fade_out_start:.3f}:d={FADE_DUR}:color=black[v{i}]"
         )
 
     concat_in  = "".join(f"[v{i}]" for i in range(len(card_paths)))

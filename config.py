@@ -94,4 +94,4 @@ CHANNEL_NAME = "Flash Gol"
 
 # ---- Background music ----
 MUSIC_PATH = "assets/flashgol-theme.mp3"
-MUSIC_VOLUME = 0.9   # 0.0-1.0, relativo a la voz
+MUSIC_VOLUME = 0.08   # 0.0-1.0, relativo a la voz
