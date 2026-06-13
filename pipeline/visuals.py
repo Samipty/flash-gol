@@ -196,7 +196,7 @@ def _hook_card(path, home, away, title, hook, league=""):
     while d.textlength(label, font=tf) > W - 80:
         tf = _font(tf.size - 4)
     team_y = H // 2 + 80   # comfortably below center — the area Sami circled
-    _centered(d, label, team_y, tf, GOLD, max_w=W-SAFE_TEXT_W)
+    _centered(d, label, team_y, tf, GOLD, max_w=SAFE_TEXT_W)
 
     # Thin separator below teams
     sep_y = team_y + tf.getbbox("A")[3] + 30
