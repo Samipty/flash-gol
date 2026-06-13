@@ -129,11 +129,11 @@ def _gold_line(d, y=303):
     d.rectangle([60, y, W-60, y+4], fill=GOLD)
 
 def _cta_btn(d, text, color=RED_CTA):
-    d.rounded_rectangle([70, H-210, W-70, H-80], radius=28, fill=color)
+    d.rounded_rectangle([70, H-360, W-70, H-230], radius=28, fill=color)
     f = _font(52)
     while d.textlength(text, font=f) > W-180 and f.size > 28:
         f = _font(f.size - 3)
-    d.text(((W - d.textlength(text, font=f)) / 2, H-178), text, font=f,
+    d.text(((W - d.textlength(text, font=f)) / 2, H-328), text, font=f,
            fill=WHITE)
 
 def _vcentered_block(lines_data, top=320, bottom=None):
@@ -196,7 +196,7 @@ def _hook_card(path, home, away, title, hook, league=""):
     while d.textlength(label, font=tf) > W - 80:
         tf = _font(tf.size - 4)
     team_y = H // 2 + 80   # comfortably below center — the area Sami circled
-    _centered(d, label, team_y, tf, GOLD, max_w=W-80)
+    _centered(d, label, team_y, tf, GOLD, max_w=W-SAFE_TEXT_W)
 
     # Thin separator below teams
     sep_y = team_y + tf.getbbox("A")[3] + 30

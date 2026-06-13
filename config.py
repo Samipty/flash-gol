@@ -88,7 +88,7 @@ VIDEO_W, VIDEO_H = 1080, 1920
 SCRIPT_LANGUAGE = "es"
 
 YT_CATEGORY_ID = "17"
-YT_PRIVACY = "private"
+YT_PRIVACY = "public"
 
 CHANNEL_NAME = "Flash Gol"
 
